@@ -69,3 +69,11 @@ ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 .DS_Store
+
+# Root legacy aliases (tracked under backend/)
+/src/
+/tests/
+/benchmarks/
+/examples/
+/knowledge/
+/data/
