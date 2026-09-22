@@ -1,0 +1,90 @@
+<UserControl x:Class="EcoRag.Desktop.Views.DocumentsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:EcoRag.Desktop.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vm:DocumentsViewModel}"
+             d:DesignHeight="650" d:DesignWidth="900">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="30,20,30,30">
+            <!-- Title -->
+            <TextBlock Text="Document Ingestion &amp; Chunk Manager" FontSize="26" FontWeight="SemiBold" Foreground="#F3F4F6"/>
+            <TextBlock Text="Upload PDFs, Word docs, and markdown text to index into the FAISS vector database with deduplication." 
+                       FontSize="14" Foreground="#9CA3AF" Margin="0,4,0,24"/>
+
+            <!-- Ingestion Upload Box -->
+            <Border Background="#1F2937" CornerRadius="12" Padding="28" Margin="0,0,0,24" BorderBrush="#3B82F6" BorderThickness="1.5">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="📥" FontSize="42" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="Add Documents to EcoRAG Vector Index" FontSize="18" FontWeight="SemiBold" Foreground="#F9FAFB" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Supports .PDF, .DOCX, .TXT, and .MD files" FontSize="13" Foreground="#9CA3AF" HorizontalAlignment="Center" Margin="0,4,0,16"/>
+                    <Button Content="Browse Files &amp; Ingest" Command="{Binding BrowseAndUploadCommand}" 
+                            Background="#2563EB" Foreground="#FFFFFF" FontWeight="SemiBold" Padding="20,10" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    
+                    <!-- Progress Bar (shown when uploading) -->
+                    <StackPanel Margin="0,16,0,0" Visibility="{Binding IsUploading, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ProgressBar Value="{Binding UploadProgress}" Maximum="100" Height="8" Background="#374151" Foreground="#3B82F6"/>
+                        <TextBlock Text="{Binding StatusMessage}" Foreground="#60A5FA" FontSize="12" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Documents Table Header -->
+            <DockPanel LastChildFill="True" Margin="0,0,0,12">
+                <TextBlock Text="All Ingested Knowledge Sources" FontSize="18" FontWeight="SemiBold" Foreground="#F3F4F6" VerticalAlignment="Center"/>
+                <Button Content="Refresh List" Command="{Binding LoadDocumentsCommand}" HorizontalAlignment="Right"
+                        Background="#374151" Foreground="#E5E7EB" Padding="12,6" BorderThickness="0" Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="6"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </DockPanel>
+
+            <!-- Table of Documents -->
+            <Border Background="#1F2937" CornerRadius="12" Padding="8" BorderBrush="#374151" BorderThickness="1">
+                <ItemsControl ItemsSource="{Binding Documents}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="#374151" BorderThickness="0,0,0,1" Padding="12,12">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="📑" FontSize="20" Margin="0,0,14,0" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding FileName}" FontWeight="SemiBold" Foreground="#F3F4F6" FontSize="14"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                            <TextBlock Text="{Binding FileSizeFormatted}" Foreground="#9CA3AF" FontSize="12" Margin="0,0,14,0"/>
+                                            <TextBlock Text="{Binding ChunkCount, StringFormat='{}{0} Chunks'}" Foreground="#60A5FA" FontSize="12" Margin="0,0,14,0"/>
+                                            <TextBlock Text="{Binding EmbeddingModel, StringFormat='{}Model: {0}'}" Foreground="#9CA3AF" FontSize="12"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,20,0">
+                                        <TextBlock Text="{Binding IndexingEnergyJoules, StringFormat='{}⚡ {0} Joules'}" Foreground="#10B981" FontWeight="SemiBold" FontSize="13"/>
+                                        <TextBlock Text="{Binding IndexedAt, StringFormat='{}{0:g}'}" Foreground="#6B7280" FontSize="11"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="3" Background="#064E3B" CornerRadius="12" Padding="12,4" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Status}" Foreground="#34D399" FontSize="12" FontWeight="SemiBold"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

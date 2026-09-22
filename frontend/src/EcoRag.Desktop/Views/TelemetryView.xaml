@@ -1,0 +1,103 @@
+<UserControl x:Class="EcoRag.Desktop.Views.TelemetryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:EcoRag.Desktop.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vm:TelemetryViewModel}"
+             d:DesignHeight="650" d:DesignWidth="900">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="30,20,30,30">
+            <!-- Header -->
+            <TextBlock Text="Energy &amp; Environmental Telemetry" FontSize="26" FontWeight="SemiBold" Foreground="#F3F4F6"/>
+            <TextBlock Text="Detailed hardware proxy measurements comparing Standard RAG against Eco-optimized RAG." 
+                       FontSize="14" Foreground="#9CA3AF" Margin="0,4,0,24"/>
+
+            <!-- Main Comparison Banner -->
+            <Border Background="#1F2937" CornerRadius="14" Padding="24" Margin="0,0,0,24" BorderBrush="#059669" BorderThickness="1.5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Standard RAG Side -->
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                        <TextBlock Text="STANDARD RAG (BASELINE)" FontSize="12" FontWeight="Bold" Foreground="#EF4444" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding CumulativeJoulesStandard, StringFormat='{}{0:N0} J'}" FontSize="36" FontWeight="Bold" Foreground="#F87171" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        <TextBlock Text="Heavy chunks + Unfiltered Context" FontSize="12" Foreground="#9CA3AF" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <!-- VS Divider -->
+                    <Border Grid.Column="1" Background="#374151" Width="1" Margin="20,0" Height="80"/>
+
+                    <!-- EcoRAG Side -->
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                        <TextBlock Text="ECORAG OPTIMIZED" FontSize="12" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding CumulativeJoulesEcoRag, StringFormat='{}{0:N0} J'}" FontSize="36" FontWeight="Bold" Foreground="#34D399" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        <TextBlock Text="{Binding SavingsPercentage, StringFormat='{}Saved: {0:F1}% compute power'}" FontSize="13" FontWeight="SemiBold" Foreground="#6EE7B7" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Metrics Grid -->
+            <UniformGrid Columns="3" Margin="0,0,0,24">
+                <Border Background="#111827" CornerRadius="10" Padding="18" Margin="0,0,8,0" BorderBrush="#1F2937" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="TOTAL POWER REDUCTION" FontSize="11" FontWeight="Bold" Foreground="#9CA3AF"/>
+                        <TextBlock Text="{Binding CumulativeSavingsJoules, StringFormat='{}{0:N0} Joules'}" FontSize="24" FontWeight="Bold" Foreground="#34D399" Margin="0,6,0,0"/>
+                        <TextBlock Text="~0.41 Watt-hours saved" FontSize="12" Foreground="#6B7280" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#111827" CornerRadius="10" Padding="18" Margin="4,0,4,0" BorderBrush="#1F2937" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="CO2 EMISSIONS AVOIDED" FontSize="11" FontWeight="Bold" Foreground="#9CA3AF"/>
+                        <TextBlock Text="{Binding CarbonOffsetGrams, StringFormat='{}{0:F2} g CO2e'}" FontSize="24" FontWeight="Bold" Foreground="#60A5FA" Margin="0,6,0,0"/>
+                        <TextBlock Text="Estimated carbon reduction" FontSize="12" Foreground="#6B7280" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#111827" CornerRadius="10" Padding="18" Margin="8,0,0,0" BorderBrush="#1F2937" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="ACTIVE TIER STRATEGY" FontSize="11" FontWeight="Bold" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Tier 1 Fast Gating" FontSize="20" FontWeight="Bold" Foreground="#FBBF24" Margin="0,6,0,0"/>
+                        <TextBlock Text="Small chunks + Reranker gate" FontSize="12" Foreground="#6B7280" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Detailed Optimization breakdown -->
+            <TextBlock Text="RAG Pipeline Optimization Breakdown" FontSize="18" FontWeight="SemiBold" Foreground="#F3F4F6" Margin="0,0,0,12"/>
+            <Border Background="#1F2937" CornerRadius="12" Padding="20" BorderBrush="#374151" BorderThickness="1">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,14">
+                        <TextBlock Text="1. Deduplication &amp; Cleaning" FontWeight="SemiBold" Foreground="#E5E7EB"/>
+                        <TextBlock Text="- 12% Energy" Foreground="#34D399" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                    </DockPanel>
+                    <ProgressBar Value="12" Maximum="100" Height="6" Background="#374151" Foreground="#34D399" Margin="0,0,0,14"/>
+
+                    <DockPanel Margin="0,0,0,14">
+                        <TextBlock Text="2. Tiered Vector Search (FAISS L2)" FontWeight="SemiBold" Foreground="#E5E7EB"/>
+                        <TextBlock Text="- 24% Energy" Foreground="#34D399" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                    </DockPanel>
+                    <ProgressBar Value="24" Maximum="100" Height="6" Background="#374151" Foreground="#34D399" Margin="0,0,0,14"/>
+
+                    <DockPanel Margin="0,0,0,14">
+                        <TextBlock Text="3. BGE Reranker Gating &amp; Early Exit" FontWeight="SemiBold" Foreground="#E5E7EB"/>
+                        <TextBlock Text="- 38% Energy" Foreground="#34D399" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                    </DockPanel>
+                    <ProgressBar Value="38" Maximum="100" Height="6" Background="#374151" Foreground="#34D399" Margin="0,0,0,14"/>
+
+                    <DockPanel Margin="0,0,0,14">
+                        <TextBlock Text="4. Minimized Context Expansion (LLM Tokens)" FontWeight="SemiBold" Foreground="#E5E7EB"/>
+                        <TextBlock Text="- 45% Energy" Foreground="#34D399" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                    </DockPanel>
+                    <ProgressBar Value="45" Maximum="100" Height="6" Background="#374151" Foreground="#34D399"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
