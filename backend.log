@@ -1,0 +1,11 @@
+INFO:     127.0.0.1:53538 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53538 - "POST /api/ingest/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53547 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65472 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52580 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52580 - "POST /api/query HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51059 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62799 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62799 - "POST /api/ingest/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63272 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63272 - "POST /api/query HTTP/1.1" 200 OK

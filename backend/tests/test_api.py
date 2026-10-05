@@ -140,19 +140,23 @@ class TestEcoRAGComprehensiveAPI(unittest.TestCase):
         """Test end-to-end question answering with citations and live physical telemetry."""
         payload = {
             "query": "How does EcoRAG avoid quadratic attention costs?",
-            "retrieval_mode": "hybrid",
+            "retrieval_mode": "sparse",
             "top_k": 2,
             "max_tokens": 60
         }
         response = self.client.post("/api/query", json=payload)
         self.assertEqual(response.status_code, 200)
         data = response.json()
+        self.assertIn("request_id", data)
+        self.assertTrue(data["request_id"].startswith("rag_"))
+        self.assertEqual(response.headers.get("X-Request-ID"), data["request_id"])
         self.assertIn("answer", data)
         self.assertGreater(len(data["answer"]), 0)
         self.assertGreater(len(data["citations"]), 0)
 
         # Validate Telemetry card
         telemetry = data["telemetry"]
+        self.assertEqual(telemetry["request_id"], data["request_id"])
         self.assertGreater(telemetry["latency_ms"], 0.0)
         self.assertGreater(telemetry["peak_ram_mb"], 0.0)
         self.assertGreater(telemetry["estimated_wh"], 0.0)

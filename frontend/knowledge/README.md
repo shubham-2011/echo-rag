@@ -15,6 +15,16 @@ This folder serves as the permanent knowledge base for the **EcoRAG Desktop Appl
 | [desktop_app_architecture_audit.md](file:///d:/Program/C%23/ECORAG%20desktop%20application/knowledge/desktop_app_architecture_audit.md) | Comprehensive software design audit, WinUI 3 rationale, client-server boundary, MVVM layout, and pre-development checklist. |
 | [analysis_prompts.md](file:///d:/Program/C%23/ECORAG%20desktop%20application/knowledge/analysis_prompts.md) | Ready-to-use prompts for AI coding agents to audit desktop technology, existing conversations, and complete software design. |
 | [ecorag_backend_context.md](file:///d:/Program/C%23/ECORAG%20desktop%20application/knowledge/ecorag_backend_context.md) | Technical overview of the EcoRAG FastAPI backend, `@measure_energy` telemetry, and API contract. |
+| [ui_ux_iris_redesign.md](ui_ux_iris_redesign.md) | UI/UX audit of the WPF client and the Iris color persona, layout, and files changed on 2026-10-03. |
+| [../docs/12_implementation_plan.md](../../docs/12_implementation_plan.md) | Backend + desktop plan to persist the index, label estimated energy, run experiments, and finish the audit layer. |
+| [../../docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md) | Authoritative live architecture (FastAPI, FAISS persistence, audit, desktop). |
+| [platform_architecture_and_audit.md](platform_architecture_and_audit.md) | Feature audit matrix, run/demo commands, and changelog for persistence + telemetry labels. |
+| [blockchain_audit_test_plan.md](blockchain_audit_test_plan.md) | Full blockchain audit test plan (objectives, BC-* cases, acceptance criteria). |
+| [blockchain_test_traceability.md](blockchain_test_traceability.md) | Maps plan IDs to pytest; release checklist status. |
+| [rag_observability_logging_spec.md](rag_observability_logging_spec.md) | Parts 25–28: request_id tracing, log tags, fallback audit, trace test, acceptance queries. |
+| [ecorag_audit_solidity_security_audit.md](ecorag_audit_solidity_security_audit.md) | Pre-deploy Solidity audit for `EcoRAGAudit.sol` (commitments, access control, verification). |
+| [live_bug_company_name_investigation.md](live_bug_company_name_investigation.md) | Live UI: wrong architecture answer, empty sources, 97.5 J vs 46.0 J. |
+| [synoptek_pdf_smoke_benchmark.md](synoptek_pdf_smoke_benchmark.md) | 20-question smoke test vs the Synoptek intern PDF (18/22 live). |
 
 ---
 

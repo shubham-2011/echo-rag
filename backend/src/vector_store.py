@@ -72,6 +72,12 @@ class FAISSVectorStore:
 
         return results
 
+    def reset(self) -> None:
+        """Drop all vectors so a newly ingested document does not mix with the previous PDF."""
+        self.index = faiss.IndexFlatIP(self.dimension)
+        self.chunks = []
+        self.chunk_id_map = {}
+
     @property
     def total_vectors(self) -> int:
         return self.index.ntotal

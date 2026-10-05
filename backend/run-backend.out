@@ -1,0 +1,16 @@
+INFO:     127.0.0.1:50918 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61000 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64676 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57204 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57544 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57544 - "POST /api/ingest/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57547 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57547 - "POST /api/query HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62805 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62805 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62811 - "POST /api/experiments HTTP/1.1" 201 Created
+INFO:     127.0.0.1:62811 - "POST /api/experiments/0265d670-f312-41d4-b786-33741a869b15/complete HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62811 - "POST /api/audit/0265d670-f312-41d4-b786-33741a869b15/verify HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62811 - "POST /api/audit/0265d670-f312-41d4-b786-33741a869b15/verify HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62811 - "GET /api/audit/0265d670-f312-41d4-b786-33741a869b15/proof HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61661 - "GET /api/health HTTP/1.1" 200 OK

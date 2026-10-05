@@ -1,0 +1,65 @@
+{
+  "query": "company name Synoptek About Us",
+  "mode": "sparse",
+  "hits": [
+    {
+      "chunk_id": "Pre Placement Paid Internship -EOC Engineer.docx_sw17_2c77623ce83f",
+      "doc_id": "Pre Placement Paid Internship -EOC Engineer.docx",
+      "text": "If you are open, then we will be able to provide you a customized environment that suits your potential. Round 3: HR Discussion\n\nFocus Areas: Personality, Motivation, Long-Term Goals, Team Compatibility, and Cultural Fit\n\nTypical Questions:\n\n“Tell me about yourself”\n\n“Why do you want to join Synoptek?”\n\n“What are you long term goals professionally and personally?”\n\nPurpose: To understand the candidate's alignment with the company’s values, commitment to the 2-year bond, and readiness to grow professionally\n\nTip: Be genuine, research the company beforehand, and prepare to talk about both strengths and areas of improvement\n\nSynoptek Promise\n\nWhen you partner with Synoptek, you engage with an ever-growing, ever-evolving IT organization that provides a high-caliber level of team, results, growth and clarity. You are our ultimate investment and as part of that you will have access to continuous clarity in your personal and professional development, a team who has your back, mentorship to achieve rock-star level results.",
+      "score": 14.4833,
+      "rank": 1
+    },
+    {
+      "chunk_id": "Pre Placement Paid Internship -EOC Engineer.pdf_sw21_b9fbdb6ffa98",
+      "doc_id": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "text": "If you \nare open, then we will be able to provide you a customized environment that suits your potential.  Round 3: HR Discussion \n \n Focus Areas: Personality, Motivation, Long-Term Goals, Team Compatibility, and Cultural Fit \n \n Typical Questions: \n “Tell me about yourself” \n “Why do you want to join Synoptek?” \n “What are you long term goals professionally and personally?” \n \n Purpose: To understand the candidate's alignment with the company’s values, commitment to \nthe 2-year bond, and readiness to grow professionally \n \n Tip: Be genuine, research the company beforehand, and prepare to talk about both strengths \nand areas of improvement \n \n \nSynoptek Promise \n \nWhen you partner with Synoptek, you engage with an ever -growing, ever -evolving IT organization that \nprovides a high-caliber level of team, results, growth and clarity. You are our ultimate investment and as part \nof that you will have access to continuous clarity in your personal and professional development, a team who \nhas your back, mentorship to a chieve rock-star level results.",
+      "score": 14.4646,
+      "rank": 2
+    },
+    {
+      "chunk_id": "Pre Placement Paid Internship -EOC Engineer.docx_sw0_ed55656b3219",
+      "doc_id": "Pre Placement Paid Internship -EOC Engineer.docx",
+      "text": "About Us\n\nSynoptek is a Global Systems Integrator (SI), and Managed IT services Provide (MSP) offering Comprehensive IT Management and Consultancy Services to organizations worldwide. Who are we:\n\nIncorporated in 2001; Headquartered in Irvine, CA focusing on end-to-end enterprise software solutions & Services. One of the Top 25 world’s premier Managed Services Providers (MSP).",
+      "score": 14.3282,
+      "rank": 3
+    },
+    {
+      "chunk_id": "Pre Placement Paid Internship -EOC Engineer.pdf_sw1_a1b639d68f53",
+      "doc_id": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "text": "About Us \n \nSynoptek is a Global Systems Integrator (SI), and Managed IT services Provide (MSP) offering Comprehensive \nIT Management and Consultancy Services to organizations worldwide. Who are we: \n Incorporated in 2001; Headquartered in Irvine, CA focusing on end -to-end enterprise software \nsolutions & Services.  One of the Top 25 world’s premier Managed Services Providers (MSP).",
+      "score": 14.3282,
+      "rank": 4
+    },
+    {
+      "chunk_id": "Pre Placement Paid Internship -EOC Engineer.pdf_sw0_0198706dfddb",
+      "doc_id": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "text": "--- Page 1 ---\nLegal Notice: The information transmitted in this document is intended only for the addressee and may contain confidential \nand/or privileged material. Any interception, review, retransmission, dissemination, or other use of, or taking of any action \nupon this information by persons or entities other than the intended recipient is prohibited by law and may subject them to \ncriminal or civil liability. About Us \n \nSynoptek is a Global Systems Integrator (SI), and Managed IT services Provide (MSP) offering Comprehensive \nIT Management and Consultancy Services to organizations worldwide.",
+      "score": 13.245,
+      "rank": 5
+    },
+    {
+      "chunk_id": "Pre Placement Paid Internship -EOC Engineer.docx_sw15_dada2dd30e69",
+      "doc_id": "Pre Placement Paid Internship -EOC Engineer.docx",
+      "text": "Mention things that you are confident about. Be open and honest about things that you don’t know. Be at ease, don’t be nervous.",
+      "score": 11.2992,
+      "rank": 6
+    },
+    {
+      "chunk_id": "Pre Placement Paid Internship -EOC Engineer.pdf_sw19_d05844c5ed79",
+      "doc_id": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "text": "Mention things that you are confident about. Be \nopen and honest about things that you don’t know. Be at ease, don’t be nervous.",
+      "score": 11.2992,
+      "rank": 7
+    },
+    {
+      "chunk_id": "Pre Placement Paid Internship -EOC Engineer.docx_sw14_809149b7cf9f",
+      "doc_id": "Pre Placement Paid Internship -EOC Engineer.docx",
+      "text": "Tip: Revise theoretical concepts, and fundamentals. Be upfront and genuine with the interviewer on what you have learned and what you know. Mention things that you are confident about.",
+      "score": 10.5972,
+      "rank": 8
+    }
+  ],
+  "rerank_telemetry": null,
+  "adaptive_telemetry": null,
+  "latency_ms": 0.18
+}

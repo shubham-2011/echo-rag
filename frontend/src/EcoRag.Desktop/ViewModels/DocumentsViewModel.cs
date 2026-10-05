@@ -88,6 +88,7 @@ public partial class DocumentsViewModel : ObservableObject
 
         Application.Current?.Dispatcher?.Invoke(() =>
         {
+            Documents.Clear();
             Documents.Insert(0, doc);
             IsUploading = false;
             StatusMessage = $"Successfully indexed {doc.FileName} into FAISS vector database ({doc.ChunkCount} chunks, {doc.IndexingEnergyJoules} J).";

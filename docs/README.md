@@ -39,6 +39,9 @@ User Query ──► Query Classifier ──► Adaptive Retrieval ──► Con
 | [10_gpt_research_prompts_and_audit.md](file:///d:/Program/Python/Echo%20Rag/knowledge/10_gpt_research_prompts_and_audit.md) | **GPT Research & Investigation Guide** | 5 targeted, deep-dive academic and architectural prompt suites designed specifically to run in ChatGPT. |
 | [11_fastapi_testing_and_gpt_prompts.md](file:///d:/Program/Python/Echo%20Rag/knowledge/11_fastapi_testing_and_gpt_prompts.md) | **FastAPI Testing & GPT Audit Prompts** | Master prompt suites to generate test cases, analyze test logs, stress-test concurrency, and audit API security via GPT. |
 | [fastapi_audit_report.md](file:///d:/Program/Python/Echo%20Rag/knowledge/fastapi_audit_report.md) | **EcoRAG FastAPI Technical Audit Report** | Complete 15-section senior engineer audit report with empirical metrics, bug analyses, and ranked action items. |
+| [12_implementation_plan.md](12_implementation_plan.md) | **Fix-and-implement plan** | Ordered plan: persist index, honest energy labels, real experiment runs, local audit, optional public chain, desktop Audit UI. |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | **Live system architecture** | Authoritative diagram and API flows for the running codebase. |
+| [blockchain_audit_test_plan.md](blockchain_audit_test_plan.md) | **Blockchain audit test plan** | Objectives, BC-* cases, acceptance criteria, demo flow. |
 
 ---
 

@@ -1,4 +1,5 @@
 import os
+import hashlib
 from abc import ABC, abstractmethod
 from typing import List, Optional
 import numpy as np
@@ -42,6 +43,37 @@ class BaseEmbeddingService(ABC):
         if norm_a == 0.0 or norm_b == 0.0:
             return 0.0
         return float(np.dot(a, b) / (norm_a * norm_b))
+
+
+class HashEmbeddingService(BaseEmbeddingService):
+    """Deterministic non-semantic fallback used when local ML binaries cannot load.
+
+    This keeps health checks, contract tests, and lightweight deployments usable,
+    but callers can identify it through ``provider`` and must not treat its
+    retrieval quality as equivalent to a sentence-transformer model.
+    """
+
+    def __init__(self, dimension: int = 384):
+        self._dim = dimension
+
+    @property
+    def dimension(self) -> int:
+        return self._dim
+
+    @property
+    def provider(self) -> str:
+        return "fallback-hash"
+
+    def embed_text(self, text: str) -> List[float]:
+        values = np.zeros(self._dim, dtype=np.float32)
+        for token in text.lower().split():
+            digest = hashlib.sha256(token.encode("utf-8")).digest()
+            values[int.from_bytes(digest[:4], "big") % self._dim] += 1.0
+        norm = np.linalg.norm(values)
+        return (values / norm if norm else values).tolist()
+
+    def embed_batch(self, texts: List[str]) -> List[List[float]]:
+        return [self.embed_text(text) for text in texts]
 
 
 class GeminiEmbeddingService(BaseEmbeddingService):

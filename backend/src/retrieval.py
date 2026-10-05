@@ -1,5 +1,6 @@
 import re
 import hashlib
+import time
 from enum import Enum
 from typing import List, Tuple, Dict, Optional, Any
 from dataclasses import dataclass, field
@@ -40,18 +41,27 @@ class QueryClassifier:
         re.compile(r"^[A-Za-z0-9_\-\.]{1,25}$"),       # Single token / ID / code
         re.compile(r"^(what is|define|formula for)\s+[\w\s]{1,25}$", re.I),
         re.compile(r"^\d+([A-Za-z]+)?$"),              # Pure numbers or metrics
+        re.compile(
+            r"^(what|where|who|which|when|how much|how many)\b.+$",
+            re.I,
+        ),
     ]
 
     def classify(self, query: str) -> QueryComplexity:
-        q = query.strip().lower()
+        q = query.strip().lower().rstrip("?!.")
         words = re.findall(r"\w+", q)
         num_words = len(words)
 
         if not q or num_words == 0:
             return QueryComplexity.SIMPLE
 
-        # 1. Exact / Short Factoid -> SIMPLE
-        if num_words <= 3:
+        if re.search(r"\btotal stipend\b|\bover the internship\b", q):
+            return QueryComplexity.SIMPLE
+
+        # 1. Short factoid / identity lookup -> SIMPLE (BM25)
+        if num_words <= 14:
+            if re.search(r"\bcompan(y|ies)\s+name\b|\bname of (the )?company\b", q):
+                return QueryComplexity.SIMPLE
             for pattern in self.SIMPLE_PATTERNS:
                 if pattern.match(q):
                     return QueryComplexity.SIMPLE
@@ -64,6 +74,199 @@ class QueryClassifier:
 
         # 3. Default to NORMAL (Dense Semantic Search)
         return QueryComplexity.NORMAL
+
+
+@dataclass
+class QueryProfile:
+    intent: str
+    entity: str
+    preferred_sections: tuple
+    preferred_subsections: tuple
+    question_type: str
+
+
+def classify_query_profile(query: str) -> QueryProfile:
+    """Map question language to retrieval targets. Does not contain document answers."""
+    q = query.strip().lower()
+    if re.search(r"\bceo\b|hr manager name", q):
+        return QueryProfile("personnel", "ceo", (), (), "abstain")
+    if re.search(r"\bmention\b", q):
+        return QueryProfile("mention", "named_entity", (), (), "mention")
+    if re.search(r"degree|eligib|qualification", q):
+        return QueryProfile(
+            "eligibility",
+            "degree_requirement",
+            ("Eligibility Criteria",),
+            ("Degree Requirement",),
+            "factoid",
+        )
+    if re.search(r"percent|percentage|aggregate", q):
+        return QueryProfile(
+            "eligibility",
+            "academic_performance",
+            ("Eligibility Criteria",),
+            ("Academic Performance",),
+            "numeric",
+        )
+    if re.search(
+        r"internship.{0,48}(pay|compensation|stipend|get)|"
+        r"how much (does|do).{0,24}intern|"
+        r"how much.{0,16}(get|paid).{0,24}intern|"
+        r"monthly internship (pay|compensation)",
+        q,
+    ) or re.search(r"\bstiphan\b|\bstiphend\b|\bstipand\b", q):
+        return QueryProfile(
+            "internship",
+            "stipend",
+            ("Internship Details",),
+            ("Stipend",),
+            "numeric",
+        )
+    if re.search(r"\bfte\b|full-?time|\bcompensation\b|\blpa\b|annual (pay|salary|comp)", q) and "internship" not in q:
+        return QueryProfile(
+            "compensation",
+            "annual_compensation",
+            ("Full-Time Employment Terms",),
+            ("Annual Compensation",),
+            "numeric",
+        )
+    if re.search(r"total stipend|over the internship", q):
+        return QueryProfile(
+            "internship",
+            "stipend_total",
+            ("Internship Details",),
+            ("Stipend", "Duration"),
+            "calculation",
+        )
+    if re.search(r"\bstipend\b", q):
+        return QueryProfile(
+            "internship",
+            "stipend",
+            ("Internship Details",),
+            ("Stipend",),
+            "numeric",
+        )
+    if re.search(r"technical (requirement|skill)", q):
+        return QueryProfile(
+            "technical_requirements",
+            "required_technical_skillset",
+            ("Required Technical Skillset",),
+            (),
+            "factoid",
+        )
+    if re.search(r"headquarter", q):
+        return QueryProfile("location", "headquarters", ("About Us", "Who are we"), (), "factoid")
+    if re.search(r"work location", q):
+        return QueryProfile("location", "work_location", ("Work Location",), (), "factoid")
+    if re.search(r"\bleave early\b|\bearly exit\b", q):
+        return QueryProfile(
+            "internship",
+            "early_exit",
+            ("Internship Details",),
+            ("Early Exit Clause",),
+            "numeric",
+        )
+    if re.search(r"\bbond\b|\bservice agreement\b|\bcommitment period\b", q):
+        return QueryProfile(
+            "compensation",
+            "commitment",
+            ("Full-Time Employment Terms",),
+            ("Commitment Period", "Bond Clause"),
+            "numeric",
+        )
+    if re.search(r"\bround\s*1\b", q):
+        return QueryProfile("interview", "round_1", ("Round 1", "Interview Selection Process"), (), "factoid")
+    if re.search(r"\bround\s*2\b", q):
+        return QueryProfile("interview", "round_2", ("Round 2", "Interview Selection Process"), (), "factoid")
+    if re.search(r"\bround\s*3\b", q):
+        return QueryProfile("interview", "round_3", ("Round 3", "Interview Selection Process"), (), "factoid")
+    if re.search(r"company name|who are we|about us|\bemployer\b", q):
+        return QueryProfile(
+            "identity",
+            "company",
+            ("About Us", "Who are we", "Role at a Glance", "Company"),
+            ("Company",),
+            "identity",
+        )
+    return QueryProfile("general", "none", (), (), "general")
+
+
+def apply_section_boost(query: str, hits: List[Tuple[Chunk, float]]) -> List[Tuple[Chunk, float]]:
+    """Re-rank retrieved hits when the query names a document section. Does not invent hits."""
+    if not hits:
+        return hits
+    profile = classify_query_profile(query)
+    if not profile.preferred_sections and not profile.preferred_subsections:
+        return hits
+
+    def blob(chunk: Chunk) -> str:
+        meta = chunk.metadata or {}
+        return " ".join(
+            [
+                str(meta.get("section") or ""),
+                str(meta.get("subsection") or ""),
+                str(meta.get("parent_section") or ""),
+                chunk.text[:500],
+            ]
+        ).lower()
+
+    blobs = [blob(chunk) for chunk, _ in hits]
+    supported = False
+    targets = [t.lower() for t in profile.preferred_sections + profile.preferred_subsections]
+    for text in blobs:
+        if any(t in text for t in targets):
+            supported = True
+            break
+    if not supported:
+        return hits
+
+    rescored: List[Tuple[Chunk, float]] = []
+    for (chunk, score), text in zip(hits, blobs):
+        factor = 1.0
+        for section in profile.preferred_sections:
+            if section.lower() in text:
+                factor += 0.55
+        for sub in profile.preferred_subsections:
+            if sub.lower() in text:
+                factor += 0.45
+        if profile.intent == "eligibility" and "interview" in text and "eligib" not in text:
+            factor *= 0.5
+        if profile.intent == "compensation" and re.search(r"\bshift\b", text) and "compensation" not in text:
+            factor *= 0.4
+        if profile.intent == "technical_requirements" and "skillset" not in text and "job specification" in text:
+            factor *= 0.55
+        rescored.append((chunk, float(score) * factor))
+    rescored.sort(key=lambda item: item[1], reverse=True)
+    return rescored
+
+
+ANSWER_ENTITY_RE = re.compile(
+    r"₹|rs\.?\s*\d|inr\s*\d|\d[\d,]*\s*(?:thousand|lakhs?|%|per annum|per month)|"
+    r"\d{1,2}\s*%|\d+\s*-?\s*year|\d+\s*months?|\b20\d{2}\b",
+    re.I,
+)
+
+
+def split_evidence_units(text: str) -> List[str]:
+    cleaned = (text or "").replace("\r", "\n")
+    cleaned = re.sub(r"\b(i\.e|e\.g|vs|mr|mrs|dr)\.", r"\1<DOT>", cleaned, flags=re.I)
+    parts = re.split(
+        r"(?<=[.!?])\s+|[•]\s*|\n+",
+        cleaned,
+    )
+    raw = [" ".join(p.replace("<DOT>", ".").split()).strip() for p in parts if " ".join(p.split()).strip()]
+    merged: List[str] = []
+    i = 0
+    while i < len(raw):
+        current = raw[i]
+        heading_only = current.endswith(":") and len(current.split()) <= 10
+        if heading_only and i + 1 < len(raw):
+            merged.append(f"{current} {raw[i + 1]}")
+            i += 2
+            continue
+        merged.append(current)
+        i += 1
+    return merged
 
 
 class ExactQueryCache:
@@ -220,28 +423,50 @@ class DynamicContextFilter:
 
     @staticmethod
     def compress_chunk_sentences(chunk: Chunk, query: str, max_sentences: int = 3) -> str:
-        """Extract top most relevant sentences from a chunk based on lexical term overlap."""
+        """Keep answer-bearing bullets; do not drop numeric/section evidence for factoids."""
         text = chunk.text
-        # Split by sentence boundaries
-        sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+        sentences = split_evidence_units(text)
         if len(sentences) <= max_sentences:
             return text
 
+        profile = classify_query_profile(query)
         query_tokens = set(re.findall(r"\w+", query.lower()))
-        if not query_tokens:
-            return " ".join(sentences[:max_sentences])
-
+        section_terms = {
+            t.lower()
+            for t in profile.preferred_sections + profile.preferred_subsections
+            if t
+        }
+        keep_idx = set()
         scored_sentences = []
         for idx, sentence in enumerate(sentences):
-            sent_tokens = set(re.findall(r"\w+", sentence.lower()))
-            overlap = len(query_tokens.intersection(sent_tokens))
-            scored_sentences.append((overlap, idx, sentence))
+            lowered = sentence.lower()
+            sent_tokens = set(re.findall(r"\w+", lowered))
+            overlap = len(query_tokens.intersection(sent_tokens)) if query_tokens else 0
+            bonus = 0
+            if any(term in lowered for term in section_terms):
+                bonus += 4
+                keep_idx.add(idx)
+            if profile.question_type in {"numeric", "factoid"} and ANSWER_ENTITY_RE.search(sentence):
+                bonus += 3
+                keep_idx.add(idx)
+            if profile.intent == "compensation" and re.search(r"\bshift\b|am to|pm to", lowered):
+                bonus -= 3
+            if profile.intent == "eligibility" and "interview" in lowered and "degree" not in lowered:
+                bonus -= 3
+            scored_sentences.append((overlap + bonus, idx, sentence))
 
-        # Sort by overlap descending, then preserve original order
+        if profile.question_type in {"numeric", "factoid"}:
+            max_sentences = max(max_sentences, min(6, len(keep_idx) + 2))
+
         top_sentences = sorted(scored_sentences, key=lambda x: x[0], reverse=True)[:max_sentences]
-        top_sentences_ordered = sorted(top_sentences, key=lambda x: x[1])
-
-        return " ".join([s[2] for s in top_sentences_ordered])
+        selected = {item[1] for item in top_sentences} | (keep_idx if profile.question_type in {"numeric", "factoid"} else set())
+        if len(selected) > max_sentences:
+            preferred = sorted(keep_idx)[:max_sentences]
+            filler = [i for _, i, _ in top_sentences if i not in preferred]
+            selected = set(preferred + filler) 
+            selected = set(list(selected)[:max_sentences])
+        ordered = [sentences[i] for i in sorted(selected) if i < len(sentences)]
+        return " ".join(ordered) if ordered else " ".join(sentences[:max_sentences])
 
 
 class SentenceWindowExpander:
@@ -433,6 +658,32 @@ class HybridRetriever:
             (chunk_map[cid], rrf_scores[cid])
             for cid in sorted_chunk_ids[:top_k]
         ]
+
+        try:
+            from src.observability import get_trace
+
+            trace = get_trace()
+            if trace:
+                dense_rank = {chunk.chunk_id: rank for rank, (chunk, _) in enumerate(dense_hits, 1)}
+                sparse_rank = {chunk.chunk_id: rank for rank, (chunk, _) in enumerate(sparse_hits, 1)}
+                dense_score = {chunk.chunk_id: score for chunk, score in dense_hits}
+                sparse_score = {chunk.chunk_id: score for chunk, score in sparse_hits}
+                fusion_start = time.perf_counter()
+                for rank, cid in enumerate(sorted_chunk_ids[:top_k], 1):
+                    trace.debug(
+                        "FUSION",
+                        chunk=cid,
+                        dense_rank=dense_rank.get(cid),
+                        sparse_rank=sparse_rank.get(cid),
+                        dense_score=dense_score.get(cid),
+                        sparse_score=sparse_score.get(cid),
+                        fusion_score=rrf_scores[cid],
+                        rank=rank,
+                    )
+                trace.record_stage("fusion_ms", fusion_start)
+        except ImportError:
+            pass
+
         return results
 
 
@@ -541,8 +792,17 @@ class AdaptiveRetriever:
                     context_tokens_approx=tokens
                 )
 
+        hash_embeddings = getattr(self.embedding_service, "provider", "") == "fallback-hash"
+
         # 3. Dynamic Routing
-        if mode == "sparse" or complexity == QueryComplexity.SIMPLE:
+        # Hash embeddings are not semantic. Prefer BM25 so fact lookups (company name, stipend)
+        # are not drowned by unrelated dense neighbors.
+        if hash_embeddings:
+            self.sparse_routed_queries += 1
+            mode_used = "sparse"
+            reason = "Non-semantic embedding provider; lexical BM25 used instead of dense FAISS."
+            candidates = self.bm25_retriever.search(query, top_k=top_k * 2)
+        elif mode == "sparse" or complexity == QueryComplexity.SIMPLE:
             self.sparse_routed_queries += 1
             mode_used = "sparse"
             reason = "Simple factoid / keyword query routed to BM25 (Zero GPU/embedding compute)."
@@ -564,14 +824,15 @@ class AdaptiveRetriever:
 
         orig_count = len(candidates)
 
-        # 4. Dynamic Context Filtering (tau_min threshold)
-        if apply_dynamic_filter and candidates:
+        profile = classify_query_profile(query)
+        if apply_dynamic_filter and candidates and profile.question_type != "calculation":
             filtered_candidates = self.context_filter.filter_chunks(candidates)
             pruned_count = orig_count - len(filtered_candidates)
         else:
             filtered_candidates = candidates
             pruned_count = 0
 
+        filtered_candidates = apply_section_boost(query, filtered_candidates)
         final_hits = filtered_candidates[:top_k]
 
         # 5. Optional Sentence-Window Expansion

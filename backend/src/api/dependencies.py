@@ -1,6 +1,7 @@
+import logging
 import os
 from typing import List, Optional
-from src.embeddings import BaseEmbeddingService, LocalEmbeddingService, GeminiEmbeddingService
+from src.embeddings import BaseEmbeddingService, HashEmbeddingService, LocalEmbeddingService, GeminiEmbeddingService
 from src.vector_store import FAISSVectorStore
 from src.retrieval import (
     BM25Retriever,
@@ -14,6 +15,10 @@ from src.retrieval import (
 )
 from src.reranker import ThresholdGatedReranker
 from src.ingestion import Chunk
+from src.persistence import IndexStore
+
+
+logger = logging.getLogger(__name__)
 
 
 class AppState:
@@ -22,7 +27,11 @@ class AppState:
     """
 
     def __init__(self):
-        self.embedder: BaseEmbeddingService = LocalEmbeddingService(model_name="all-MiniLM-L6-v2")
+        try:
+            self.embedder: BaseEmbeddingService = LocalEmbeddingService(model_name="all-MiniLM-L6-v2")
+        except (ImportError, OSError, RuntimeError) as error:
+            logger.warning("Local embeddings unavailable; using deterministic fallback: %s", error)
+            self.embedder = HashEmbeddingService()
         self.vector_store: FAISSVectorStore = FAISSVectorStore(dimension=self.embedder.dimension)
         self.chunks: List[Chunk] = []
         self.bm25_retriever: Optional[BM25Retriever] = None
@@ -38,6 +47,16 @@ class AppState:
         # Optional Gemini client for answer generation
         self._gemini_client = None
 
+        self.index_store = IndexStore()
+        self.index_manifest: dict | None = None
+        self.index_loaded_from_disk = False
+        self.active_doc_ids: List[str] = []
+        loaded = self.index_store.load(self)
+        if loaded is not None:
+            self.index_manifest = loaded
+            self.index_loaded_from_disk = True
+            self.active_doc_ids = sorted({c.doc_id for c in self.chunks})
+
     def get_gemini_client(self):
         if self._gemini_client is None:
             api_key = os.getenv("GEMINI_API_KEY")
@@ -46,6 +65,20 @@ class AppState:
                 self._gemini_client = genai.Client(api_key=api_key)
         return self._gemini_client
 
+    def reset_index(self) -> list[str]:
+        previous = sorted({c.doc_id for c in self.chunks})
+        self.vector_store.reset()
+        self.chunks = []
+        self.bm25_retriever = None
+        self.exact_cache.clear()
+        self.semantic_cache.clear()
+        self.active_doc_ids = []
+        self.index_manifest = None
+        self.index_loaded_from_disk = False
+        self.index_store.clear()
+        logger.info("[INGEST] reset_index previous_docs=%s", ",".join(previous) or "none")
+        return previous
+
     def update_corpus(self, new_chunks: List[Chunk], new_embeddings: List[List[float]]) -> None:
         """Add new chunks to FAISS and rebuild the BM25 lexical index, clearing query caches."""
         self.vector_store.add_chunks(new_chunks, new_embeddings)
@@ -53,6 +86,17 @@ class AppState:
         self.bm25_retriever = BM25Retriever(self.chunks)
         self.exact_cache.clear()
         self.semantic_cache.clear()
+        self.active_doc_ids = sorted({c.doc_id for c in self.chunks})
+        manifest = self.index_store.save(self)
+        if manifest is not None:
+            self.index_manifest = manifest
+            self.index_loaded_from_disk = True
+
+    def replace_corpus(self, new_chunks: List[Chunk], new_embeddings: List[List[float]]) -> list[str]:
+        previous = self.reset_index()
+        if new_chunks:
+            self.update_corpus(new_chunks, new_embeddings)
+        return previous
 
     def get_dense_retriever(self) -> DenseRetriever:
         return DenseRetriever(self.vector_store, self.embedder)

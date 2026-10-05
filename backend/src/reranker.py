@@ -86,7 +86,23 @@ class ThresholdGatedReranker:
         eval_candidates = candidates[:max_rerank_pool]
         pairs = [(query, c.text) for c, _ in eval_candidates]
 
-        ce_scores = self.cross_encoder.predict(pairs)
+        try:
+            ce_scores = self.cross_encoder.predict(pairs)
+        except (OSError, ImportError, RuntimeError) as error:
+            try:
+                from src.observability import get_trace
+
+                trace = get_trace()
+                if trace:
+                    trace.record_fallback("RERANK", f"cross_encoder_unavailable:{type(error).__name__}")
+            except ImportError:
+                pass
+            self.bypassed_queries += 1
+            return RerankResult(
+                ranked_chunks=candidates[:top_k],
+                bypassed=True,
+                reason=f"Cross-encoder unavailable ({type(error).__name__}); retriever order kept.",
+            )
 
         # Pair candidates with their new cross-encoder scores
         reranked = [

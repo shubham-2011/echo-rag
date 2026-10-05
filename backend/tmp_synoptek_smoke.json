@@ -1,0 +1,750 @@
+{
+  "passed": 22,
+  "total": 22,
+  "results": [
+    {
+      "id": 1,
+      "query": "What is the company name?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113139_66b4",
+      "answer": "About Us: Synoptek is a Global Systems Integrator (SI), and Managed IT services Provide (MSP) offering Comprehensive IT Management and Consultancy Services to organizations worldwide.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 1,
+      "top_section": "Who are we",
+      "grounding_passed": true,
+      "energy_j": 48.344,
+      "latency_ms": 1652.79,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "synoptek is|about us.{0,40}synoptek|company.{0,20}synoptek",
+          "ok": true
+        },
+        {
+          "rule": "must_not",
+          "pattern": "\\bfaiss\\b",
+          "ok": true
+        },
+        {
+          "rule": "must_not",
+          "pattern": "energy-optimized pipeline",
+          "ok": true
+        },
+        {
+          "rule": "must_not",
+          "pattern": "jisa",
+          "ok": true
+        },
+        {
+          "rule": "must_not",
+          "pattern": "cryptobind",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 2,
+      "query": "Where is it headquartered?",
+      "pass": true,
+      "category": "followup_unresolved",
+      "request_id": "rag_20261003_113141_89f9",
+      "answer": "Who are we:  Incorporated in 2001; Headquartered in Irvine, CA focusing on end -to-end enterprise software solutions & Services.  One of the Top 25 world’s premier Managed Services Providers (MSP).  Over 1100+ employees; serving 1200+ clients globally.  Offices and resources across North America with delivery centers in Canada & India.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 1,
+      "top_section": "Who are we",
+      "grounding_passed": true,
+      "energy_j": 3.272,
+      "latency_ms": 111.87,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "irvine",
+          "ok": true
+        },
+        {
+          "rule": "must_not",
+          "pattern": "\\bfaiss\\b",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": "Without conversation rewrite, 'it' may not resolve to Synoptek."
+    },
+    {
+      "id": 3,
+      "query": "What does the company do?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113141_124c",
+      "answer": "About Us: Synoptek is a Global Systems Integrator (SI), and Managed IT services Provide (MSP) offering Comprehensive IT Management and Consultancy Services to organizations worldwide.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 1,
+      "top_section": "About Us",
+      "grounding_passed": true,
+      "energy_j": 345.787,
+      "latency_ms": 7684.15,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "systems integrator|managed it|msp|consultancy|it management",
+          "ok": true
+        },
+        {
+          "rule": "must_not",
+          "pattern": "energy-optimized pipeline",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 4,
+      "query": "How many employees does it have?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113148_8d59",
+      "answer": "Who are we:  Incorporated in 2001; Headquartered in Irvine, CA focusing on end -to-end enterprise software solutions & Services.  One of the Top 25 world’s premier Managed Services Providers (MSP).  Over 1100+ employees; serving 1200+ clients globally.  Offices and resources across North America with delivery centers in Canada & India.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 1,
+      "top_section": "Who are we",
+      "grounding_passed": true,
+      "energy_j": 9.191,
+      "latency_ms": 314.22,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "1100",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 5,
+      "query": "How many clients does it serve?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113149_c6ad",
+      "answer": "Who are we:  Incorporated in 2001; Headquartered in Irvine, CA focusing on end -to-end enterprise software solutions & Services.  One of the Top 25 world’s premier Managed Services Providers (MSP).  Over 1100+ employees; serving 1200+ clients globally.  Offices and resources across North America with delivery centers in Canada & India.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 1,
+      "top_section": "Who are we",
+      "grounding_passed": true,
+      "energy_j": 2.64,
+      "latency_ms": 90.25,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "1200",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 6,
+      "query": "Where is the work location?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113149_1867",
+      "answer": "Work Location: Pune",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 1,
+      "top_section": "Work Location",
+      "grounding_passed": true,
+      "energy_j": 8.35,
+      "latency_ms": 285.47,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "pune",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 7,
+      "query": "What degrees are eligible?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113149_d7f5",
+      "answer": "Eligibility Criteria / Degree Requirement: B.E./B.Tech in Computer Science or Information Technology/ EC M.Sc. IT/MCA",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 2,
+      "top_section": "Eligibility Criteria",
+      "grounding_passed": true,
+      "energy_j": 2.397,
+      "latency_ms": 81.95,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "b\\.?e\\.?|b\\.?tech|m\\.?sc|mca",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 8,
+      "query": "What percentage is required?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113149_da6e",
+      "answer": "Eligibility Criteria / Academic Performance: Minimum aggregate of 65% or above throughout academics",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 2,
+      "top_section": "Eligibility Criteria",
+      "grounding_passed": true,
+      "energy_j": 8.051,
+      "latency_ms": 275.23,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "65",
+          "ok": true
+        },
+        {
+          "rule": "must_not",
+          "pattern": "\\b50%",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 9,
+      "query": "What is the internship duration?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113150_febe",
+      "answer": "Internship Details / Duration: Paid Internship from September 2026 to May 2027 (9 months).  Type: Paid Internship",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 2,
+      "top_section": "Internship Details",
+      "grounding_passed": true,
+      "energy_j": 2.403,
+      "latency_ms": 82.16,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "september|sep\\.?\\s*2026|9\\s*month",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 10,
+      "query": "What is the stipend?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113150_4592",
+      "answer": "Internship Details / Stipend: ₹10,000 per month.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 2,
+      "top_section": "Internship Details",
+      "grounding_passed": true,
+      "energy_j": 7.337,
+      "latency_ms": 250.83,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "10,000|10000",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 11,
+      "query": "What happens if I leave early?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113150_be09",
+      "answer": "Internship Details / Early Exit Clause: If an intern chooses to leave during the internship, ₹50 Thousand will be charged as training and onboarding expenses.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 2,
+      "top_section": "Internship Details",
+      "grounding_passed": true,
+      "energy_j": 3.477,
+      "latency_ms": 118.87,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "50,000|50000|50 thousand",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 12,
+      "query": "What is the FTE compensation?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113150_b0bd",
+      "answer": "Full-Time Employment Terms / Annual Compensation: ₹3.5 lakhs per annum (fully fixed, including Provident Fund & Gratuity as part of retiral benefits & ESIC)",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 2,
+      "top_section": "Full-Time Employment Terms",
+      "grounding_passed": true,
+      "energy_j": 2.433,
+      "latency_ms": 83.17,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "3\\.5",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 13,
+      "query": "What is the service agreement?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113150_489e",
+      "answer": "Full-Time Employment Terms / Bond Clause: In case of early resignation (i.e., leaving before completing the 2-year commitment), the candidate will be required to repay ₹2 lakh as per the employment bond.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 2,
+      "top_section": "Full-Time Employment Terms",
+      "grounding_passed": true,
+      "energy_j": 4.543,
+      "latency_ms": 155.32,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "2\\s*-?\\s*year|two year",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 14,
+      "query": "What is the bond amount?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113150_192e",
+      "answer": "Full-Time Employment Terms / Bond Clause: In case of early resignation (i.e., leaving before completing the 2-year commitment), the candidate will be required to repay ₹2 lakh as per the employment bond.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 2,
+      "top_section": "Full-Time Employment Terms",
+      "grounding_passed": true,
+      "energy_j": 6.542,
+      "latency_ms": 223.66,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "2\\s*lakh|2,00,000|200000",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 15,
+      "query": "What is Round 1?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113151_cb5d",
+      "answer": "Round 1: Aptitude Test & GD Aptitude Test Focus Areas: Logical Reasoning, Analytical Thinking, Basic Mathematics, and Verbal Ability Purpose: To assess problem-solving skills, numerical reasoning, and clarity in written communication Tip: Practice basic quantitative aptitude and puzzles from standard placement preparation resources",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 1,
+      "top_section": "Round 1",
+      "grounding_passed": true,
+      "energy_j": 4.083,
+      "latency_ms": 139.6,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "aptitude|group discussion|\\bgd\\b",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 16,
+      "query": "What is Round 2?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113151_bcdb",
+      "answer": "Round 2: Technical & Practical Interview Core Focus Areas: The technical interview will be tailored to your academic background and the skills or projects you mention in your CV. Rather than testing you on unfamiliar technologies, we aim to understand how well you grasp what you’ve already learned or practiced —whether through coursework, internships, or personal projects. Interviewers may ask questions related to core concepts like IT infrastructure, Hardware, System Adminstration, networking fundamentals or basic",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 4,
+      "top_section": "Round 2",
+      "grounding_passed": true,
+      "energy_j": 6.83,
+      "latency_ms": 233.49,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "technical",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 17,
+      "query": "What is Round 3?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113151_d26a",
+      "answer": "Round 3: HR Discussion Focus Areas: Personality, Motivation, Long-Term Goals, Team Compatibility, and Cultural Fit Typical Questions: “Tell me about yourself” “Why do you want to join Synoptek?” “What are you long term goals professionally and personally?” Purpose: To understand the candidate's alignment with the company’s values, commitment to the 2-year bond, and readiness to grow professionally Tip: Be genuine, research the company beforehand, and prepare to talk about both strengths",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 4,
+      "top_section": "Round 3",
+      "grounding_passed": true,
+      "energy_j": 3.863,
+      "latency_ms": 132.05,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "hr",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 18,
+      "query": "What are the technical requirements?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113151_d0e5",
+      "answer": "Required Technical Skillset: - Windows/Linux knowledge, Networking – TCP/IP, DNS, DHCP , IT troubleshooting",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 1,
+      "top_section": "Required Technical Skillset",
+      "grounding_passed": true,
+      "energy_j": 6.727,
+      "latency_ms": 230.0,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "windows|linux|tcp|dns|dhcp|troubleshooting",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 19,
+      "query": "What does the document say about unfamiliar technologies?",
+      "pass": true,
+      "category": "fact",
+      "request_id": "rag_20261003_113151_4ebc",
+      "answer": "Round 2: Technical & Practical Interview Core Focus Areas: The technical interview will be tailored to your academic background and the skills or projects you mention in your CV. Rather than testing you on unfamiliar technologies, we aim to understand how well you grasp what you’ve already learned or practiced —whether through databases, as well as any tools or languages you say you're familiar with. play a key role in the evaluation. clearly and confidently—will also be an important part of the assessment.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 4,
+      "top_section": "Round 2",
+      "grounding_passed": true,
+      "energy_j": 4.331,
+      "latency_ms": 148.07,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "learn|practic|cv|resume|theoret",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 20,
+      "query": "Who is the CEO?",
+      "pass": true,
+      "category": "abstain",
+      "request_id": "rag_20261003_113152_69b9",
+      "answer": "I couldn't find enough relevant information in the indexed documents.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 1,
+      "top_section": "Legal Notice",
+      "grounding_passed": true,
+      "energy_j": 6.241,
+      "latency_ms": 213.35,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "couldn.?t find|not (enough|found|stated)|no relevant|not mentioned",
+          "ok": true
+        },
+        {
+          "rule": "must_not",
+          "pattern": "\\bceo\\b.{0,40}\\bis\\b",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": "Must not invent a CEO name."
+    },
+    {
+      "id": 21,
+      "query": "Does this document mention JISA Softech?",
+      "pass": true,
+      "category": "boundary",
+      "request_id": "rag_20261003_113152_8a4a",
+      "answer": "I couldn't find enough relevant information in the indexed documents.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 1,
+      "top_section": "About Us",
+      "grounding_passed": true,
+      "energy_j": 10.635,
+      "latency_ms": 236.34,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "couldn.?t find|not (enough|found|stated)|does not mention|not mention",
+          "ok": true
+        },
+        {
+          "rule": "must_not",
+          "pattern": "jisa softech is",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": null
+    },
+    {
+      "id": 22,
+      "query": "If the stipend is ₹10,000 per month and the internship lasts 9 months, what is the total stipend over the internship?",
+      "pass": true,
+      "category": "calculation",
+      "request_id": "rag_20261003_113152_a715",
+      "answer": "The document states a stipend of ₹10,000 per month and a duration of 9 months. Calculated total (not written as a single figure in the PDF): ₹90,000.",
+      "n_sources": 5,
+      "top_source": "Pre Placement Paid Internship -EOC Engineer.pdf",
+      "top_page": 2,
+      "top_section": "Internship Details",
+      "grounding_passed": true,
+      "energy_j": 8.286,
+      "latency_ms": 283.28,
+      "checks": [
+        {
+          "rule": "must",
+          "pattern": "90,000|90000",
+          "ok": true
+        },
+        {
+          "rule": "source_doc",
+          "pattern": "Pre Placement Paid Internship -EOC Engineer.pdf",
+          "ok": true
+        },
+        {
+          "rule": "request_id",
+          "ok": true
+        }
+      ],
+      "note": "₹90,000 is calculated, not explicit in the PDF."
+    }
+  ]
+}

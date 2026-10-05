@@ -1,0 +1,41 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "D:\\Program\\Python\\Echo Rag\\backend\\contracts\\src\\EcoRAGAudit.sol": {
+      "lastModificationDate": 1791024427432,
+      "contentHash": "ebd231e4806765b29a0ef17cc8e8d312",
+      "sourceName": "src/EcoRAGAudit.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "EcoRAGAudit"
+      ]
+    }
+  }
+}

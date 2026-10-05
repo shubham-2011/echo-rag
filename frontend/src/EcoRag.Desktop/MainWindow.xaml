@@ -7,16 +7,15 @@
         xmlns:views="clr-namespace:EcoRag.Desktop.Views"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vm:MainViewModel}"
-        Title="EcoRAG — Energy-Efficient Desktop Client" Height="750" Width="1200"
-        MinHeight="600" MinWidth="950"
+        Title="EcoRAG — Energy-Aware RAG Platform"
+        Height="860" Width="1360"
+        MinHeight="680" MinWidth="1100"
         WindowStartupLocation="CenterScreen"
-        WindowState="Normal"
-        ShowInTaskbar="True"
-        Topmost="True"
-        Background="#0F172A" Foreground="#F8FAFC">
+        FontFamily="Segoe UI Variable, Segoe UI"
+        Background="{DynamicResource AppBackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}">
 
     <Window.Resources>
-        <!-- DataTemplates to connect ViewModels to their Views automatically -->
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
             <views:DashboardView/>
         </DataTemplate>
@@ -33,33 +32,6 @@
             <views:SettingsView/>
         </DataTemplate>
 
-        <!-- Modern Navigation Button Style -->
-        <Style x:Key="NavButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#94A3B8"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Padding" Value="16,12"/>
-            <Setter Property="Margin" Value="10,4"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#1E293B"/>
-                                <Setter Property="Foreground" Value="#F8FAFC"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </Window.Resources>
 
     <Grid>
@@ -67,93 +39,120 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="232"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Left Navigation Sidebar -->
-        <Border Grid.Row="0" Grid.Column="0" Background="#0B1120" BorderBrush="#1E293B" BorderThickness="0,0,1,0">
+        <Border Grid.Row="0" Grid.Column="0"
+                Background="{DynamicResource SidebarBackgroundBrush}"
+                BorderBrush="{DynamicResource CardBorderBrush}"
+                BorderThickness="0,0,1,0">
             <DockPanel LastChildFill="True">
-                <!-- Branding Header -->
-                <Border DockPanel.Dock="Top" Padding="20,24,20,20" BorderBrush="#1E293B" BorderThickness="0,0,0,1">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🌿" FontSize="24" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                            <StackPanel>
-                                <TextBlock Text="EcoRAG" FontSize="20" FontWeight="Bold" Foreground="#10B981"/>
-                                <TextBlock Text="Desktop Platform" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                            </StackPanel>
-                        </StackPanel>
-                        <Border Background="#064E3B" CornerRadius="6" Padding="6,3" Margin="0,12,0,0" HorizontalAlignment="Left">
-                            <TextBlock Text="Energy-Efficient RAG" FontSize="10" FontWeight="Bold" Foreground="#34D399"/>
+                <Border DockPanel.Dock="Top" Padding="20,22,20,8">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="36" Height="36" CornerRadius="10" Background="{DynamicResource NavActiveBrush}" Margin="0,0,12,0">
+                            <TextBlock Text="E" FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource AccentPrimaryBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="EcoRAG" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Iris console" FontSize="11" Foreground="{DynamicResource AccentPrimaryBrush}"/>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <!-- Navigation Links -->
-                <StackPanel DockPanel.Dock="Top" Margin="0,14,0,0">
-                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="Dashboard">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🏠" Margin="0,0,12,0" FontSize="16"/>
-                            <TextBlock Text="Dashboard"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="Documents">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="📑" Margin="0,0,12,0" FontSize="16"/>
-                            <TextBlock Text="Documents"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="Chat">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="💬" Margin="0,0,12,0" FontSize="16"/>
-                            <TextBlock Text="RAG Chat"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="Telemetry">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="⚡" Margin="0,0,12,0" FontSize="16"/>
-                            <TextBlock Text="Telemetry"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource NavButtonStyle}" Command="{Binding NavigateCommand}" CommandParameter="Settings">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="⚙️" Margin="0,0,12,0" FontSize="16"/>
-                            <TextBlock Text="Settings"/>
-                        </StackPanel>
+                <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,8,0,12">
+                        <TextBlock Text="WORKSPACE" Style="{StaticResource SidebarCategoryStyle}"/>
+                        <Button Content="Overview" Command="{Binding NavigateCommand}" CommandParameter="Dashboard">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ActiveSection}" Value="Dashboard">
+                                            <Setter Property="Background" Value="{DynamicResource NavActiveBrush}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentPrimaryBrush}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Content="Documents" Command="{Binding NavigateCommand}" CommandParameter="Documents">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ActiveSection}" Value="Documents">
+                                            <Setter Property="Background" Value="{DynamicResource NavActiveBrush}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentPrimaryBrush}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Content="Assistant" Command="{Binding NavigateCommand}" CommandParameter="Chat">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ActiveSection}" Value="Chat">
+                                            <Setter Property="Background" Value="{DynamicResource NavActiveBrush}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentPrimaryBrush}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Content="Telemetry" Command="{Binding NavigateCommand}" CommandParameter="Telemetry">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ActiveSection}" Value="Telemetry">
+                                            <Setter Property="Background" Value="{DynamicResource NavActiveBrush}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentPrimaryBrush}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,8">
+                    <Button Content="Settings" Command="{Binding NavigateCommand}" CommandParameter="Settings">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ActiveSection}" Value="Settings">
+                                        <Setter Property="Background" Value="{DynamicResource NavActiveBrush}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource AccentPrimaryBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
                     </Button>
                 </StackPanel>
-
-                <!-- Sidebar Footer Status -->
-                <Border DockPanel.Dock="Bottom" Padding="16,14" Margin="10" Background="#111827" CornerRadius="8" BorderBrush="#1F2937" BorderThickness="1">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Ellipse Width="8" Height="8" Fill="#10B981" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="FAISS L2 Vector DB" FontSize="11" FontWeight="SemiBold" Foreground="#D1D5DB"/>
-                        </StackPanel>
-                        <TextBlock Text="Tiered Rerank Active" FontSize="10" Foreground="#6B7280" Margin="16,2,0,0"/>
-                    </StackPanel>
-                </Border>
             </DockPanel>
         </Border>
 
-        <!-- Main Content Area -->
-        <Border Grid.Row="0" Grid.Column="1" Background="#0F172A">
+        <Border Grid.Row="0" Grid.Column="1" Background="{DynamicResource AppBackgroundBrush}">
             <ContentControl Content="{Binding CurrentView}"/>
         </Border>
 
-        <!-- Bottom Status Bar -->
-        <Border Grid.Row="1" Grid.ColumnSpan="2" Background="#090E17" BorderBrush="#1E293B" BorderThickness="0,1,0,0" Padding="16,6">
-            <DockPanel LastChildFill="True">
+        <Border Grid.Row="1" Grid.ColumnSpan="2"
+                Background="{DynamicResource SidebarBackgroundBrush}"
+                BorderBrush="{DynamicResource CardBorderBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="20,8">
+            <DockPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Ellipse Width="8" Height="8" Fill="#10B981" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="EcoRAG Client v1.0.0" FontSize="11" Foreground="#94A3B8" Margin="0,0,16,0"/>
-                    <TextBlock Text="Target: FastAPI @ http://127.0.0.1:8000" FontSize="11" Foreground="#64748B" Margin="0,0,16,0"/>
-                    <TextBlock Text="BGE Reranker: ON" FontSize="11" Foreground="#34D399"/>
+                    <Ellipse Width="7" Height="7" Fill="{DynamicResource EmeraldBrush}" Margin="0,0,8,0"/>
+                    <TextBlock Text="API connected" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,18,0"/>
+                    <Ellipse Width="7" Height="7" Fill="{DynamicResource InfoPrimaryBrush}" Margin="0,0,8,0"/>
+                    <TextBlock Text="FAISS ready" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,18,0"/>
+                    <Ellipse Width="7" Height="7" Fill="{DynamicResource AccentPrimaryBrush}" Margin="0,0,8,0"/>
+                    <TextBlock Text="Reranker active" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
                 </StackPanel>
-                <TextBlock HorizontalAlignment="Right" Text="⚡ Energy Optimized Mode: -38% FLOPs" FontSize="11" FontWeight="SemiBold" Foreground="#10B981"/>
+                <TextBlock HorizontalAlignment="Right" Text="EcoRAG  ·  Iris" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
             </DockPanel>
         </Border>
     </Grid>

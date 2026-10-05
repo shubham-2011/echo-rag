@@ -1,9 +1,13 @@
+import logging
+import os
+
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from src.ingestion import extract_text_from_bytes, Document
 from src.api.schemas import IngestTextRequest, IngestResponse
 from src.api.dependencies import app_state
 from src.ingestion import DocumentIngestionPipeline
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/ingest", tags=["Ingestion"])
 
 
@@ -51,7 +55,8 @@ async def ingest_file_upload(
     chunk_size: int = Form(256),
     chunk_overlap: int = Form(30),
     enable_dedup: bool = Form(True),
-    strategy: str = Form("sentence_window")
+    strategy: str = Form("sentence_window"),
+    replace_index: bool = Form(True),
 ):
     """
     Ingest a binary or text document file (.pdf, .docx, .txt, .md),
@@ -79,14 +84,32 @@ async def ingest_file_upload(
         strategy=strategy
     )
 
-    unique_chunks = pipeline.ingest_text(extracted_text, doc_id=doc_id, is_markdown=is_md)
+    ext = os.path.splitext(file.filename)[1].lstrip(".").lower()
+    unique_chunks = pipeline.ingest_text(
+        extracted_text,
+        doc_id=doc_id,
+        metadata={"filename": file.filename, "file_type": ext, "source": file.filename},
+        is_markdown=is_md,
+    )
 
     raw_chunks = pipeline.chunker.chunk_document(Document(doc_id=doc_id, content=extracted_text))
     dedup_count = len(raw_chunks) - len(unique_chunks)
 
     if unique_chunks:
         embeddings = app_state.embedder.embed_batch([c.text for c in unique_chunks])
-        app_state.update_corpus(unique_chunks, embeddings)
+        previous: list[str] = []
+        if replace_index:
+            previous = app_state.replace_corpus(unique_chunks, embeddings)
+        else:
+            app_state.update_corpus(unique_chunks, embeddings)
+        logger.info(
+            "[INGEST] doc_id=%s replace_index=%s previous_docs=%s chunks=%s vectors=%s",
+            doc_id,
+            replace_index,
+            ",".join(previous) or "none",
+            len(unique_chunks),
+            app_state.vector_store.total_vectors,
+        )
 
     return IngestResponse(
         doc_id=doc_id,
