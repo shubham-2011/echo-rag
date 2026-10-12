@@ -277,17 +277,17 @@ public class EcoRagApiService : IEcoRagApiService
             yield return word + " ";
             await Task.Delay(15, cancellationToken);
         }
+    }
 
-        private static void ThrowForHttpError(HttpResponseMessage response)
+    private static void ThrowForHttpError(HttpResponseMessage response)
+    {
+        if (!response.IsSuccessStatusCode)
         {
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException(
-                    $"EcoRAG backend rejected the request (HTTP {(int)response.StatusCode}). " +
-                    "Check ECORAG_API_KEY and its configured scopes.",
-                    null,
-                    response.StatusCode);
-            }
+            throw new HttpRequestException(
+                $"EcoRAG backend rejected the request (HTTP {(int)response.StatusCode}). " +
+                "Check ECORAG_API_KEY and its configured scopes.",
+                null,
+                response.StatusCode);
         }
     }
 }
