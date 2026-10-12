@@ -35,6 +35,19 @@ frontend/
 
 ## 🚀 Getting Started
 
+### Backend API key
+
+The backend requires a bearer API key for search, query, and document ingestion. Generate a key and persist it in the Windows user environment before launching both the backend and desktop client:
+
+```powershell
+$key = python -c "import secrets; print(secrets.token_urlsafe(32))"
+setx ECORAG_API_KEY $key
+```
+
+Open a new terminal after running `setx`. Docker Compose also reads `ECORAG_API_KEY` from the repository-root `.env` file; copy `.env.example` to `.env` and set the same key there. The desktop client reads the Windows environment variable and sends it as a Bearer token. Never commit `.env` or share the API key.
+
+The configured default scopes are `read,write`. `read` permits search/query and `write` permits ingestion. Tool invocation is not exposed by this application; the backend tool policy denies all tools unless explicitly allowlisted and separately granted the `tools:invoke` scope.
+
 ### Prerequisites
 - Windows 10/11
 - [.NET 10 SDK](https://dotnet.microsoft.com/download) (or .NET 8+)

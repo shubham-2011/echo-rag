@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -30,6 +31,12 @@ public class EcoRagApiService : IEcoRagApiService
         _httpClient = httpClient;
         if (_httpClient.Timeout < TimeSpan.FromSeconds(30))
             _httpClient.Timeout = TimeSpan.FromSeconds(120);
+        var apiKey = Environment.GetEnvironmentVariable("ECORAG_API_KEY");
+        if (!string.IsNullOrWhiteSpace(apiKey))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", apiKey);
+        }
     }
 
     private static void UiLog(string line)
@@ -67,13 +74,19 @@ public class EcoRagApiService : IEcoRagApiService
         {
             try
             {
-                var docs = await _httpClient.GetFromJsonAsync<List<DocumentItem>>(
-                    $"{BaseUrl.TrimEnd('/')}/api/v1/documents", JsonOpts);
+                using var response = await _httpClient.GetAsync(
+                    $"{BaseUrl.TrimEnd('/')}/api/v1/documents");
+                ThrowForHttpError(response);
+                var docs = await response.Content.ReadFromJsonAsync<List<DocumentItem>>(JsonOpts);
                 if (docs != null && docs.Count > 0)
                 {
                     ActiveDocumentIds = [.. docs.Select(d => d.FileName).Where(n => !string.IsNullOrWhiteSpace(n))];
                     return docs;
                 }
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode.HasValue)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -128,12 +141,7 @@ public class EcoRagApiService : IEcoRagApiService
         form.Add(new StringContent("true"), "replace_index");
 
         var res = await _httpClient.PostAsync($"{BaseUrl.TrimEnd('/')}/api/ingest/file", form);
-        if (!res.IsSuccessStatusCode)
-        {
-            doc.Status = $"Ingest failed ({(int)res.StatusCode})";
-            UiLog($"[ERROR] component=INGEST status={(int)res.StatusCode}");
-            return doc;
-        }
+        ThrowForHttpError(res);
 
         var ingestRes = await res.Content.ReadFromJsonAsync<BackendIngestResponse>(JsonOpts);
         if (ingestRes != null)
@@ -181,6 +189,7 @@ public class EcoRagApiService : IEcoRagApiService
 
             var res = await _httpClient.PostAsJsonAsync(
                 $"{BaseUrl.TrimEnd('/')}/api/query", reqPayload, JsonOpts, cancellationToken);
+            ThrowForHttpError(res);
             if (res.IsSuccessStatusCode)
             {
                 backendResponse = await res.Content.ReadFromJsonAsync<BackendQueryResponse>(JsonOpts, cancellationToken);
@@ -188,10 +197,10 @@ public class EcoRagApiService : IEcoRagApiService
                     ? ids.FirstOrDefault()
                     : backendResponse?.request_id;
             }
-            else
-            {
-                UiLog($"[ERROR] component=API status={(int)res.StatusCode} request_id={requestId}");
-            }
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode.HasValue)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -267,6 +276,18 @@ public class EcoRagApiService : IEcoRagApiService
 
             yield return word + " ";
             await Task.Delay(15, cancellationToken);
+        }
+
+        private static void ThrowForHttpError(HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(
+                    $"EcoRAG backend rejected the request (HTTP {(int)response.StatusCode}). " +
+                    "Check ECORAG_API_KEY and its configured scopes.",
+                    null,
+                    response.StatusCode);
+            }
         }
     }
 }

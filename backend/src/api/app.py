@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.schemas import HealthResponse
 from src.api.dependencies import app_state
 from src.api.routes import audit, experiments, ingest, search, query
+from src.security.request_limits import RequestBodyLimitMiddleware
+from src.security.auth import ApiScope, AuthenticatedPrincipal, require_access
 
 app = FastAPI(
     title="EcoRAG API",
@@ -25,6 +27,7 @@ allowed_origins = [
 ]
 
 # Enable CORS for frontend / dashboard access
+app.add_middleware(RequestBodyLimitMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
@@ -43,9 +46,11 @@ app.include_router(experiments.router)
 
 @app.get("/api/documents", tags=["Ingestion"])
 @app.get("/api/v1/documents", tags=["Ingestion"])
-def list_documents():
+def list_documents(
+    principal: AuthenticatedPrincipal = Depends(require_access(ApiScope.READ, "documents")),
+):
     grouped: dict[str, dict] = {}
-    for chunk in app_state.chunks:
+    for chunk in app_state.get_tenant_chunks(principal.subject):
         meta = chunk.metadata or {}
         doc_id = chunk.doc_id
         entry = grouped.setdefault(
@@ -72,7 +77,7 @@ async def get_health():
     manifest = app_state.index_manifest or {}
     return HealthResponse(
         status="healthy",
-        total_indexed_chunks=app_state.vector_store.total_vectors,
+        total_indexed_chunks=None,
         active_embedding_dimension=app_state.embedder.dimension,
         embedding_provider=app_state.embedder.provider,
         reranker_model=app_state.reranker.model_name,

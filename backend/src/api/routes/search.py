@@ -1,19 +1,26 @@
 import time
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from src.api.schemas import SearchRequest, SearchResponse, SearchHit, RerankTelemetry, AdaptiveTelemetry
-from src.api.dependencies import app_state
+from src.api.dependencies import app_state, security_gateway
+from src.security.auth import ApiScope, AuthenticatedPrincipal, require_access
 
 router = APIRouter(prefix="/api/search", tags=["Search"])
 
 
 @router.post("", response_model=SearchResponse)
-def search_corpus(payload: SearchRequest):
+def search_corpus(
+    payload: SearchRequest,
+    principal: AuthenticatedPrincipal = Depends(require_access(ApiScope.READ, "search")),
+):
     """
     Search the indexed corpus using Sparse BM25, Dense FAISS, Hybrid RRF, or Adaptive routing.
     Optionally applies threshold-gated reranking to save compute.
     """
     if not payload.query.strip():
         raise HTTPException(status_code=400, detail="Query cannot be empty.")
+    security_decision = security_gateway.inspect_query(payload.query)
+    if not security_decision.allowed:
+        raise HTTPException(status_code=400, detail=security_decision.reason)
 
     start_time = time.perf_counter()
     mode = payload.mode.lower()
@@ -21,7 +28,7 @@ def search_corpus(payload: SearchRequest):
     adaptive_info = None
 
     if mode == "adaptive":
-        adaptive_retriever = app_state.get_adaptive_retriever()
+        adaptive_retriever = app_state.get_adaptive_retriever(principal.subject)
         adaptive_res = adaptive_retriever.search(
             query=payload.query,
             top_k=payload.top_k,
@@ -62,7 +69,7 @@ def search_corpus(payload: SearchRequest):
                 rerank_info = None
 
     elif mode == "sparse":
-        retriever = app_state.get_bm25_retriever()
+        retriever = app_state.get_bm25_retriever(principal.subject)
         candidates = retriever.search(payload.query, top_k=payload.top_k * 2)
         rerank_info = None
         if payload.enable_rerank and candidates:
@@ -80,7 +87,7 @@ def search_corpus(payload: SearchRequest):
             final_hits = candidates[:payload.top_k]
 
     elif mode == "dense":
-        retriever = app_state.get_dense_retriever()
+        retriever = app_state.get_dense_retriever(principal.subject)
         candidates = retriever.search(payload.query, top_k=payload.top_k * 2)
         rerank_info = None
         if payload.enable_rerank and candidates:
@@ -98,7 +105,7 @@ def search_corpus(payload: SearchRequest):
             final_hits = candidates[:payload.top_k]
 
     elif mode == "hybrid":
-        retriever = app_state.get_hybrid_retriever()
+        retriever = app_state.get_hybrid_retriever(principal.subject)
         candidates = retriever.search(payload.query, top_k=payload.top_k * 2)
         rerank_info = None
         if payload.enable_rerank and candidates:
@@ -139,4 +146,3 @@ def search_corpus(payload: SearchRequest):
         adaptive_telemetry=adaptive_info,
         latency_ms=round(latency_ms, 2)
     )
-

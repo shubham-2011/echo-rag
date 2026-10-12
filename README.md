@@ -1,109 +1,136 @@
 # EcoRAG: Energy-Efficient Retrieval-Augmented Generation Platform
 
-EcoRAG is a systems-level experimental research platform and production architecture designed to minimize computational and energy overhead in Retrieval-Augmented Generation (RAG). 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
+[![.NET 10.0](https://img.shields.io/badge/.NET-10.0%20%2F%20WPF-purple.svg)](https://dotnet.microsoft.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
 
-While standard RAG implementations blindly retrieve large contexts and pump thousands of tokens into large language models (resulting in high (N^2)$ prefill compute, high latency, and high financial cost), **EcoRAG frames RAG as an adaptive multi-objective optimization problem**: minimizing Joules, latency, and token waste while preserving retrieval accuracy and answer correctness.
+**EcoRAG** is a systems-level experimental research platform and production architecture designed to minimize computational, latency, and energy overhead in Retrieval-Augmented Generation (RAG).
 
----
-
-## Architecture Overview
-
-EcoRAG is composed of two primary modules within this monorepo:
-
-1. **ackend/**: High-efficiency FastAPI service containerized with Docker, featuring:
-   - **Hybrid Retrieval**: Dense (FAISS bi-encoder with ll-MiniLM-L6-v2 / ge-small-en-v1.5) + Lexical (BM25) fused with Reciprocal Rank Fusion (RRF).
-   - **Conditional Reranking**: Threshold-gated reranker that bypasses cross-encoder forward passes when confidence margins are clear (saving up to 80% reranking energy).
-   - **Hierarchical Caching**: Exact hash caching and vector semantic query caching.
-   - **Dynamic Context Sizing**: Slices context window dynamically based on relevance thresholds.
-   - **Real-Time Telemetry**: Tracks CPU energy estimations (Joules), RAM usage, TTFT, and token usage per query.
-
-2. **desktop/**: Modern C# .NET WPF Desktop Application featuring:
-   - **Dashboard**: Live system health, active embedding model, vector dimensions, and reranker bypass statistics.
-   - **Documents**: Document ingestion manager supporting PDF, DOCX, and text file uploads.
-   - **Chat**: Streaming interactive chat interface with citations and per-turn energy footprint metrics.
-   - **Telemetry**: Real-time energy telemetry, query latency breakdowns, and caching efficiency meters.
+While standard RAG implementations indiscriminately retrieve large document chunks and pump thousands of tokens into large language models (resulting in quadratic prefill self-attention compute, high latency, and high energy consumption), **EcoRAG frames RAG as an adaptive multi-objective optimization problem**: minimizing Watt-hours, latency, and token waste while strictly maintaining retrieval accuracy and answer correctness.
 
 ---
 
-## Quickstart Guide
+## 🏛️ Architecture Overview
 
-### Option A: Run Backend with Docker (Recommended)
+```
+                          ┌──────────────────────────┐
+                          │   User Query / Request   │
+                          └─────────────┬────────────┘
+                                        │
+                                        ▼
+                          ┌──────────────────────────┐
+                          │     Query Classifier     │
+                          │ (Keyword, Semantic, etc) │
+                          └───────┬──────────┬───────┘
+                                  │          │
+                     Exact/Cached │          │ Cache Miss
+                                  ▼          ▼
+                        ┌───────────┐  ┌──────────────────────────┐
+                        │ Fast Path │  │    Adaptive Retrieval    │
+                        │  (0 Wh)   │  │ (Dense + BM25 Lexical)   │
+                        └───────────┘  └─────────────┬────────────┘
+                                                     │
+                                                     ▼
+                                       ┌──────────────────────────┐
+                                       │   Reciprocal Rank Fusion │
+                                       │       (RRF k=60)         │
+                                       └─────────────┬────────────┘
+                                                     │
+                                                     ▼
+                                       ┌──────────────────────────┐
+                                       │ Conditional Reranker     │
+                                       │ (Bypasses Cross-Encoder  │
+                                       │  when margin > threshold)│
+                                       └─────────────┬────────────┘
+                                                     │
+                                                     ▼
+                                       ┌──────────────────────────┐
+                                       │ Dynamic Context Filter   │
+                                       │ (Strips irrelevant tokens│
+                                       └─────────────┬────────────┘
+                                                     │
+                                                     ▼
+                                       ┌──────────────────────────┐
+                                       │ LLM Generation / Stream  │
+                                       └──────────────────────────┘
+```
 
-1. Navigate to the repository root:
-   `ash
-   cd EcoRAG
-   `
+The repository is organized as a clean, unified monorepo:
 
-2. Copy the environment configuration:
-   `ash
-   cp backend/.env.example backend/.env
-   # Edit backend/.env if using Google Gemini API key
-   `
-
-3. Build and launch the containerized backend:
-   `ash
-   docker compose up --build -d
-   `
-
-4. Verify health at http://localhost:8000/api/health or view Swagger API docs at http://localhost:8000/docs.
+- **`backend/`**: FastAPI backend service containerized with Docker.
+  - **Adaptive Retrieval**: Dense (FAISS bi-encoder with `all-MiniLM-L6-v2` or Google Gemini) + Lexical (BM25+) fused with Reciprocal Rank Fusion (RRF).
+  - **Conditional Reranking**: Threshold-gated reranker (`cross-encoder/ms-marco-MiniLM-L-6-v2`) that bypasses compute when confidence margins are clear (saving up to 70%+ reranking energy).
+  - **Multi-Tier Caching**: In-memory Exact Hash cache & FAISS Semantic vector cache.
+  - **Dynamic Context Sizing**: Slices context tokens based on relevance thresholds rather than fixed K.
+  - **Telemetry Engine**: Real-time energy estimations (Joules), RAM tracking, TTFT, and Eco Score computation.
+- **`frontend/`**: Modern Windows desktop frontend built with **C# (.NET 10 / WPF)** following the **MVVM** pattern.
+  - **Dashboard**: Live system health, active embedding model, and reranker bypass telemetry.
+  - **Documents Manager**: Drag-and-drop file ingestion supporting PDF, DOCX, Markdown, CSV, and Text.
+  - **Interactive Chat**: Streaming chat interface with citations and per-query energy footprint meters.
+  - **Telemetry View**: Real-time energy metrics, latency breakdowns, and caching efficiency gauges.
+- **`docs/`**: Comprehensive research findings, academic benchmarks, and system specifications.
 
 ---
 
-### Option B: Run Backend Locally (Python)
+## 🚀 Quick Start Guide
 
-1. Navigate to the backend directory:
-   `ash
-   cd backend
-   `
+### 1. Run the Backend with Docker (Recommended)
 
-2. Install dependencies:
-   `ash
-   pip install -r requirements.txt
-   `
+```bash
+# Clone the repository
+git clone https://github.com/shubham-2011/echo-rag.git
+cd echo-rag
 
-3. Start the FastAPI server:
-   `ash
-   uvicorn src.api.app:app --host 0.0.0.0 --port 8000 --reload
-   `
+# Start the backend via Docker Compose
+docker-compose up --build -d
+```
+
+The backend will start and become available at:
+- API Base: `http://localhost:8000`
+- Swagger UI Documentation: `http://localhost:8000/docs`
+- Health Check: `http://localhost:8000/api/health`
+
+### 2. Run the Backend Locally (Python 3.11+)
+
+```bash
+cd backend
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+# Linux/macOS
+source venv/bin/activate
+
+pip install -r requirements.txt
+uvicorn src.api.app:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### 3. Launch the Desktop Frontend (WPF / .NET 10)
+
+```powershell
+cd frontend/src/EcoRag.Desktop
+dotnet run
+```
+Or simply run `frontend/Run-EcoRag-Desktop.bat`.
 
 ---
 
-### Launch Desktop Frontend (C# .NET)
+## 🧪 Testing & Evaluation
 
-1. Navigate to desktop/:
-   `ash
-   cd desktop
-   `
+Run the automated backend test suite (39 tests):
+```bash
+cd backend
+python -m pytest
+```
 
-2. Build and run via .NET CLI:
-   `ash
-   dotnet run --project src/EcoRag.Desktop/EcoRag.Desktop.csproj
-   `
-
-   *Or simply double-click Run-EcoRag-Desktop.bat.*
+Run the quadratic attention benchmark:
+```bash
+python backend/src/benchmarks/chunk_attention_benchmark.py
+```
 
 ---
 
-## Monorepo Layout
+## 📄 License
 
-`
-EcoRAG/
-+-- backend/                       # Python EcoRAG FastAPI Backend
-�   +-- src/                       # API routes, retrieval, embeddings, vector store
-�   +-- tests/                     # Automated pytest suites
-�   +-- benchmarks/                # Energy and attention benchmarks
-�   +-- data/                      # Sample documents & vector indices
-�   +-- Dockerfile                 # Container definition with pre-cached weights
-�   +-- docker-compose.yml         # Backend docker compose configuration
-�   +-- requirements.txt           # CPU-optimized Python dependencies
-+-- desktop/                       # C# .NET WPF Desktop Client
-�   +-- src/EcoRag.Desktop/        # MVVM Views, ViewModels, Services, Models
-�   +-- Run-EcoRag-Desktop.bat     # Windows desktop launcher
-�   +-- EcoRag.Desktop.csproj      # .NET 10.0 WPF project
-+-- docker-compose.yml             # Monorepo compose file
-+-- .gitignore                     # Unified ignore rules
-+-- README.md                      # Documentation & architecture
-`
-
-## License
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

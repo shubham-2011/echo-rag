@@ -7,12 +7,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from fastapi.testclient import TestClient
 from src.api.app import app
+from conftest import TEST_AUTH_HEADERS
 
 
 class TestEcoRAGComprehensiveAPI(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.client = TestClient(app)
+        cls.client = TestClient(app, headers=TEST_AUTH_HEADERS)
 
     # --- 1. System Health & Metadata Tests ---
     def test_01_root_endpoint(self):

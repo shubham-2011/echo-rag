@@ -4,8 +4,9 @@ import fitz
 from src.ingestion import extract_text_from_bytes, DocumentIngestionPipeline
 from fastapi.testclient import TestClient
 from src.api.app import app
+from conftest import TEST_AUTH_HEADERS
 
-client = TestClient(app)
+client = TestClient(app, headers=TEST_AUTH_HEADERS)
 
 
 def test_pdf_text_extraction():

@@ -96,7 +96,15 @@ class GeminiEmbeddingService(BaseEmbeddingService):
             )
         self.model_name = model_name
         from google import genai
-        self.client = genai.Client(api_key=self.api_key)
+        from google.genai import types
+        from src.security.config import SECURITY_CONFIG
+
+        self.client = genai.Client(
+            api_key=self.api_key,
+            http_options=types.HttpOptions(
+                timeout=int(SECURITY_CONFIG.model_timeout_seconds * 1000)
+            ),
+        )
         self._dim = 3072
 
     @property

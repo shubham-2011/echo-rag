@@ -1,11 +1,12 @@
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field, model_validator
+from src.security.config import SECURITY_CONFIG
 
 
 # --- Health Schemas ---
 class HealthResponse(BaseModel):
     status: str
-    total_indexed_chunks: int
+    total_indexed_chunks: Optional[int] = None
     active_embedding_dimension: int
     embedding_provider: str
     reranker_model: str
@@ -20,20 +21,24 @@ class IngestTextRequest(BaseModel):
     text: str = Field(
         ...,
         min_length=1,
-        max_length=5_000_000,
+        max_length=SECURITY_CONFIG.max_document_chars,
         description="Document content to ingest and index (max 5MB text payload)."
     )
-    doc_id: str = Field(default="doc_default", description="Identifier for source document.")
+    doc_id: str = Field(
+        default="doc_default",
+        max_length=SECURITY_CONFIG.max_doc_id_chars,
+        description="Identifier for source document."
+    )
     chunk_size: int = Field(
         default=50,
-        ge=10,
-        le=4096,
+        ge=SECURITY_CONFIG.min_chunk_size,
+        le=SECURITY_CONFIG.max_chunk_size,
         description="Chunk size in words (must be between 10 and 4096)."
     )
     chunk_overlap: int = Field(
         default=10,
         ge=0,
-        le=2048,
+        le=SECURITY_CONFIG.max_chunk_overlap,
         description="Chunk overlap in words (must be non-negative and less than chunk_size)."
     )
     enable_dedup: bool = Field(default=True, description="Whether to filter near-duplicate chunks.")
@@ -59,7 +64,12 @@ class IngestResponse(BaseModel):
 
 # --- Search Schemas ---
 class SearchRequest(BaseModel):
-    query: str = Field(..., min_length=1, description="Search query string.")
+    query: str = Field(
+        ...,
+        min_length=1,
+        max_length=SECURITY_CONFIG.max_query_chars,
+        description="Search query string."
+    )
     mode: str = Field(default="hybrid", description="Retrieval mode: 'adaptive', 'dense', 'sparse', or 'hybrid'.")
     top_k: int = Field(default=5, ge=1, le=100, description="Number of candidate chunks to return (1 to 100).")
     enable_rerank: bool = Field(default=True, description="Whether to apply threshold-gated reranking.")
@@ -103,7 +113,12 @@ class SearchResponse(BaseModel):
 
 # --- Query / Generation Schemas ---
 class QueryRequest(BaseModel):
-    query: str = Field(..., min_length=1, description="User question to be answered by EcoRAG.")
+    query: str = Field(
+        ...,
+        min_length=1,
+        max_length=SECURITY_CONFIG.max_query_chars,
+        description="User question to be answered by EcoRAG."
+    )
     retrieval_mode: str = Field(default="adaptive", description="'adaptive', 'dense', 'sparse', or 'hybrid'.")
     top_k: int = Field(default=3, ge=1, le=50, description="Number of context chunks to retrieve (1 to 50).")
     max_tokens: int = Field(default=200, ge=10, le=2048, description="Maximum completion tokens to generate.")
@@ -251,4 +266,3 @@ class ExperimentRunResponse(BaseModel):
     failure_reason: Optional[str] = None
     created_at: str
     updated_at: str
-

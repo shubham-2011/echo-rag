@@ -434,7 +434,8 @@ class SentenceWindowChunker:
         if not sents:
             return []
 
-        ParentDocumentStore.get_instance().register_document(doc.doc_id, doc.content, sents)
+        parent_doc_id = doc.metadata.get("parent_doc_id", doc.doc_id)
+        ParentDocumentStore.get_instance().register_document(parent_doc_id, doc.content, sents)
 
         chunks: List[Chunk] = []
         step = max(1, self.sentences_per_chunk - self.sentence_overlap)
@@ -461,7 +462,7 @@ class SentenceWindowChunker:
                     "sentence_start_idx": start_idx,
                     "sentence_end_idx": end_idx,
                     "total_sentences": len(sents),
-                    "parent_doc_id": doc.doc_id,
+                    "parent_doc_id": parent_doc_id,
                     "context_strategy": "sentence_window",
                 }
             )
@@ -681,7 +682,8 @@ class DocumentIngestionPipeline:
         is_markdown: bool = False
     ) -> List[Chunk]:
         doc = Document(doc_id=doc_id, content=text, metadata=metadata or {})
-        ParentDocumentStore.get_instance().register_document(doc_id, text)
+        parent_doc_id = doc.metadata.get("parent_doc_id", doc_id)
+        ParentDocumentStore.get_instance().register_document(parent_doc_id, text)
 
         if self.strategy in {"sentence_window", "heading", "structured"}:
             headed = self.heading_chunker.chunk_document(doc)

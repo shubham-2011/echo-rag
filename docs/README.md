@@ -65,3 +65,12 @@ For every experimental run or query served, EcoRAG tracks:
 4. **RAM & VRAM**: Peak process memory footprint (GB)
 5. **Energy Consumption**: Active Watt-hours (Wh) via CodeCarbon, PyJoules, Intel RAPL, or NVIDIA NVML
 6. **Cost per Successful Answer**: Currency ($ / ₹) factoring in compute watts and API token pricing
+
+## Security implementation records
+
+- [Phase 0 repository audit](./security/PHASE_0_REPOSITORY_AUDIT.md)
+- [Phase 1 test and retrieval benchmark baseline](./security/PHASE_1_BASELINE.md)
+- [Phase 2 security foundation report](./security/PHASE_2_SECURITY_REPORT.md)
+- [Phase 3 authentication, authorization, and tool policy report](./security/PHASE_3_SECURITY_REPORT.md)
+- [Phase 3 incident response procedure](./security/INCIDENT_RESPONSE.md)
+- [Water-quality sensor conversation](./water_quality_sensor_conversation.md)
